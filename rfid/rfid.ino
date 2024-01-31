@@ -1,6 +1,8 @@
 #include <SPI.h>
 #include <MFRC522.h>
 #include <ESP32Servo.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
 
 #define SS_PIN 5
 #define RST_PIN 27
@@ -14,16 +16,43 @@ Servo servo;
 byte authorizedUID[4] = {0x03, 0xB2, 0x5C, 0x1F};
 int angle = 0;
 
+const char* ssid = "todo";
+const char* password = "todotodo";
+const char* serverAddress = "http://192.168.175.99:3000/start";
+
 void setup() {
   pinMode(RED_PIN, OUTPUT);
   pinMode(BLUE_PIN, OUTPUT);
   Serial.begin(115200);
+
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  }
+  Serial.println("Connected to WiFi");
+
   SPI.begin();
   rfid.PCD_Init();
   servo.attach(SERVO_PIN);
   servo.write(angle);
 
   Serial.println("Tap RFID/NFC Tag on reader");
+}
+
+void sendHttpRequest() {
+  HTTPClient http;
+  http.begin(serverAddress);
+  int httpCode = http.GET();
+
+  if (httpCode == HTTP_CODE_OK) {
+    Serial.println("HTTP request sent successfully");
+  } else {
+    Serial.println("Failed to send HTTP request");
+    Serial.println(httpCode);
+  }
+
+  http.end();
 }
 
 void loop() {
@@ -41,13 +70,15 @@ void loop() {
 
         if (angle == 0){
           angle = 90;
+          servo.write(angle);
           Serial.println("Latch released");
-        }
-        else{
+          delay(5000);
+          sendHttpRequest();
+        } else {
           angle = 0;
+          servo.write(angle);
           Serial.println("Latch in place");
         }
-        servo.write(angle);
       } else {
         Serial.println("Unauthorized Tag with UID:");
         digitalWrite(RED_PIN, HIGH);
