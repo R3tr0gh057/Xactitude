@@ -2,14 +2,14 @@
 #include <WebServer.h>
 #include <ESP32Servo.h>
 
-const char *ssid = "Celeste_2.4";
-const char *password = "7907003596";
+const char *ssid = "todo";
+const char *password = "todotodo";
 
 WebServer server(3000);
 
 Servo servo;
-int ledPin1 = 18;
-int ledPin2 = 19;
+int ledPin1 = 26;
+int ledPin2 = 27;
 int servopin = 13;
 
 void setup() {
