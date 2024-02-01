@@ -7,7 +7,7 @@
 #define SS_PIN 5
 #define RST_PIN 27
 #define SERVO_PIN 13
-#define RED_PIN 25
+#define RED_PIN 33
 #define BLUE_PIN 26
 
 MFRC522 rfid(SS_PIN, RST_PIN);
