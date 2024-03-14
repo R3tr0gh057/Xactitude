@@ -1,10 +1,23 @@
 #include <Adafruit_Fingerprint.h>
+#include <WiFi.h>
+#include <WebServer.h>
+#include <ESP32Servo.h>
 
 #define mySerial Serial2 // Use RX2 and TX2 pins of ESP32 board
 
 bool fConfig = false;
 uint8_t id;
 uint8_t rBuff;
+
+// wifi creds
+const char *ssid = "Hello";
+const char *password = "joshua 11";
+
+// led display and servo init
+Servo servo;
+int ledPin1 = 18;
+int ledPin2 = 19;
+int servopin = 21;
 
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 
@@ -23,14 +36,29 @@ uint8_t readnumber(void)
 void setup()
 {
     Serial.begin(115200);
-    while (!Serial)
-        ; // For Yun/Leo/Micro/Zero/...
+
+    pinMode(ledPin1, OUTPUT);
+    pinMode(ledPin2, OUTPUT);
+    servo.attach(servopin);
+    digitalWrite(ledPin1, LOW);
+    digitalWrite(ledPin2, HIGH);
+    servo.write(0);
+
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(1000);
+        Serial.println("Connecting to WiFi...");
+    }
+    Serial.println("Connected to WiFi");
+    Serial.println("IP: ");
+    Serial.print(WiFi.localIP());
+
     delay(100);
     Serial.println("\n\nAdafruit finger detect test");
 
     // Set the data rate for the sensor serial port
     finger.begin(57600);
-    delay(5);
+    //delay(5);
 
     if (finger.verifyPassword())
     {
@@ -120,7 +148,7 @@ void loop()
         getFingerprintID();
     }
 
-    delay(50); // don't need to run this at full speed
+    //delay(50); // don't need to run this at full speed
 }
 
 uint8_t deleteFingerprint(uint8_t id)
@@ -162,7 +190,7 @@ uint8_t getFingerprintID()
         Serial.println("Image taken");
         break;
     case FINGERPRINT_NOFINGER:
-        Serial.println("No finger detected");
+       Serial.println("No finger detected");
         return p;
     case FINGERPRINT_PACKETRECIEVEERR:
         Serial.println("Communication error");
@@ -213,6 +241,8 @@ uint8_t getFingerprintID()
     else if (p == FINGERPRINT_NOTFOUND)
     {
         Serial.println("Did not find a match");
+        digitalWrite(ledPin1, LOW);
+        digitalWrite(ledPin2, HIGH);
         return p;
     }
     else
@@ -222,6 +252,11 @@ uint8_t getFingerprintID()
     }
 
     // found a match!
+    // turn on blue
+    digitalWrite(ledPin1, HIGH);
+    digitalWrite(ledPin2, LOW);
+    servo.write(90);
+
     Serial.print("Found ID #");
     Serial.print(finger.fingerID);
     Serial.print(" with confidence of ");
@@ -248,6 +283,7 @@ int getFingerprintIDez()
         return -1;
 
     // found a match!
+
     Serial.print("Found ID #");
     Serial.print(finger.fingerID);
     Serial.print(" with confidence of ");

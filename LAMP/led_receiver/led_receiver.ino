@@ -1,26 +1,37 @@
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
+#include <WiFi.h>
+#include <WebServer.h>
 
-const char *ssid = "Celeste_2.4";
-const char *password = "7907003596";
+const char *ssid = "todo";
+const char *password = "todotodo";
 
-ESP8266WebServer server(3000);
+WebServer server(3000);
 
-int ledPin1 = D7; // blue
-int ledPin2 = D4; // light blue
-int ledPin3 = D6; // red
-int temp = 0;
-int temp2 = 0;
+int l1 = 14;
+int l2 = 27;
+int l3 = 26;
+int l4 = 33;
+int l5 = 32;
+int l6 = 19;
+int l7 = 21;
 
 void setup() {
-  pinMode(ledPin1, OUTPUT);
-  pinMode(ledPin2, OUTPUT);
-  pinMode(ledPin3, OUTPUT);
-  digitalWrite(ledPin1, LOW);
-  digitalWrite(ledPin2, LOW);
-  digitalWrite(ledPin2, LOW);
+  pinMode(l1, OUTPUT);
+  pinMode(l2, OUTPUT);
+  pinMode(l3, OUTPUT);
+  pinMode(l4, OUTPUT);
+  pinMode(l5, OUTPUT);
+  pinMode(l6, OUTPUT);
+  pinMode(l7, OUTPUT);
+
+  digitalWrite(l1, HIGH);
+  digitalWrite(l2, HIGH);
+  digitalWrite(l3, HIGH);
+  digitalWrite(l4, HIGH);
+  digitalWrite(l5, HIGH);
+  digitalWrite(l6, HIGH);
+  digitalWrite(l7, HIGH);
   
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   WiFi.begin(ssid, password);
   Serial.println("Connecting to WiFi...");
@@ -32,9 +43,9 @@ void setup() {
   Serial.println("IP: ");
   Serial.print(WiFi.localIP());
 
-  server.on("/toggle-led1", HTTP_GET, []() {
-      digitalWrite(ledPin1, !digitalRead(ledPin1));
-      if (digitalRead(ledPin1) == HIGH){
+  server.on("/t1", HTTP_GET, []() {
+      digitalWrite(l1, !digitalRead(l1));
+      if (digitalRead(l1) == LOW){
         server.send(200, "text/plain", "on");
       }
       else{
@@ -42,9 +53,9 @@ void setup() {
       }
   });
 
-  server.on("/toggle-led2", HTTP_GET, []() {
-      digitalWrite(ledPin2, !digitalRead(ledPin2));
-      if (digitalRead(ledPin2) == HIGH){
+  server.on("/t2", HTTP_GET, []() {
+      digitalWrite(l2, !digitalRead(l2));
+      if (digitalRead(l2) == LOW){
         server.send(200, "text/plain", "on");
       }
       else{
@@ -52,15 +63,76 @@ void setup() {
       }
   });
 
-  server.on("/unauth", HTTP_GET, []() {
-      digitalWrite(ledPin3, !digitalRead(ledPin3));
-      if (digitalRead(ledPin3) == HIGH){
+  server.on("/t3", HTTP_GET, []() {
+      digitalWrite(l3, !digitalRead(l3));
+      if (digitalRead(l3) == LOW){
         server.send(200, "text/plain", "on");
       }
       else{
         server.send(200, "text/plain", "off");
       }
   });
+
+  server.on("/t4", HTTP_GET, []() {
+      digitalWrite(l4, !digitalRead(l4));
+      if (digitalRead(l4) == LOW){
+        server.send(200, "text/plain", "on");
+      }
+      else{
+        server.send(200, "text/plain", "off");
+      }
+  });
+
+  server.on("/t5", HTTP_GET, []() {
+      digitalWrite(l5, !digitalRead(l5));
+      if (digitalRead(l5) == LOW){
+        server.send(200, "text/plain", "on");
+      }
+      else{
+        server.send(200, "text/plain", "off");
+      }
+  });
+
+  server.on("/t6", HTTP_GET, []() {
+      digitalWrite(l6, !digitalRead(l6));
+      if (digitalRead(l6) == LOW){
+        server.send(200, "text/plain", "on");
+      }
+      else{
+        server.send(200, "text/plain", "off");
+      }
+  });
+
+  server.on("/t7", HTTP_GET, []() {
+      digitalWrite(l7, !digitalRead(l7));
+      if (digitalRead(l7) == LOW){
+        server.send(200, "text/plain", "on");
+      }
+      else{
+        server.send(200, "text/plain", "off");
+      }
+  });
+
+  server.on("/adminoff", HTTP_GET, []() {
+      digitalWrite(l1, HIGH);
+      digitalWrite(l2, HIGH);
+      digitalWrite(l3, HIGH);
+      digitalWrite(l4, HIGH);
+      digitalWrite(l5, HIGH);
+      digitalWrite(l6, HIGH);
+      digitalWrite(l7, HIGH);
+  });
+
+  server.on("/adminon", HTTP_GET, []() {
+      digitalWrite(l1, LOW);
+      digitalWrite(l2, LOW);
+      digitalWrite(l3, LOW);
+      digitalWrite(l4, LOW);
+      digitalWrite(l5, LOW);
+      digitalWrite(l6, LOW);
+      digitalWrite(l7, LOW);
+  });
+
   // Add CORS headers for all requests
   server.onNotFound([](){
     if (server.method() == HTTP_OPTIONS) {
